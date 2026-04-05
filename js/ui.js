@@ -73,4 +73,23 @@ export class UI {
       this.soundCardsContainer.append(this.createSoundCard(sound));
     });
   }
+
+  // Update play/pause button for individual sound
+  updateSoundPlayButton(soundId, isPlaying) {
+    const card = document.querySelector(`[data-sound="${soundId}"]`);
+
+    if (card) {
+      const playBtn = card.querySelector(".play-btn");
+      const icon = playBtn.querySelector("i");
+      if (isPlaying) {
+        icon.classList.remove("fa-play");
+        icon.classList.add("fa-pause");
+        card.classList.add("playing");
+      } else {
+        icon.classList.remove("fa-pause");
+        icon.classList.add("fa-play");
+        card.classList.remove("playing");
+      }
+    }
+  }
 }
