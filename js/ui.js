@@ -121,4 +121,16 @@ export class UI {
       buttonSpan.textContent = "Pause All";
     }
   }
+
+  // Reset all UI elements to default state
+  resetUI() {
+    this.soundCardsContainer.querySelectorAll(".sound-card").forEach((card) => {
+      this.updateVolumeDisplay(card.dataset.sound, 0);
+      this.updateSoundPlayButton(card.dataset.sound, false);
+      card.classList.remove("playing");
+    });
+    this.updatePlayPauseAllButton();
+    this.masterVolumeSlider.value = 50;
+    this.masterVolumeValue.textContent = "50";
+  }
 }
