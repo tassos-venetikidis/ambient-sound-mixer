@@ -55,9 +55,16 @@ class AmbientMixer {
       this.setMasterVolume(volume);
     });
 
+    // Handle play/pause of all sounds
     const masterPlayPauseButton = document.getElementById("playPauseAll");
     masterPlayPauseButton?.addEventListener("click", () => {
       this.toggleAllSounds();
+    });
+
+    // Handle reset of all sounds to default state
+    const resetButton = document.getElementById("resetAll");
+    resetButton.addEventListener("click", () => {
+      this.resetAll();
     });
   }
 
@@ -142,6 +149,13 @@ class AmbientMixer {
       await this.toggleSound(soundId);
     }
     this.ui.updatePlayPauseAllButton();
+  }
+
+  // Reset everything to default state
+  resetAll() {
+    this.soundManager.stopAllSounds();
+    this.ui.resetUI();
+    this.masterVolume = 50;
   }
 }
 
