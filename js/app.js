@@ -10,6 +10,7 @@ class AmbientMixer {
     this.presetManager = null;
     this.timer = null;
     this.currentSoundState = {};
+    this.masterVolume = 50;
     this.isInitialized = false;
   }
 
@@ -46,6 +47,13 @@ class AmbientMixer {
         this.setSoundVolume(soundId, volume);
       }
     });
+
+    // Handle master volume slider
+    const masterVolumeSlider = document.getElementById("masterVolume");
+    masterVolumeSlider.addEventListener("input", (e) => {
+      const volume = parseInt(e.target.value);
+      this.setMasterVolume(volume);
+    });
   }
 
   // Load all sound files from the sounds array
@@ -75,7 +83,7 @@ class AmbientMixer {
     );
     const volume = +slider.value;
     if (audio.paused) {
-      this.soundManager.setVolume(soundId, volume === 0 ? 50 : volume);
+      this.setSoundVolume(soundId, volume === 0 ? 50 : volume);
       await this.soundManager.playSound(soundId);
       this.ui.updateSoundPlayButton(soundId, true);
       this.ui.updateVolumeDisplay(soundId, volume === 0 ? 50 : volume);
@@ -87,10 +95,41 @@ class AmbientMixer {
 
   // Set sound volume
   setSoundVolume(soundId, volume) {
+    // Calculate effective volume with master volume
+    const effectiveVolume = (volume * this.masterVolume) / 100;
     // Update sound volume in manager
-    this.soundManager.setVolume(soundId, volume);
+    this.soundManager.setVolume(soundId, effectiveVolume);
     // Update visual display
     this.ui.updateVolumeDisplay(soundId, volume);
+  }
+
+  // Set master volume
+  setMasterVolume(volume) {
+    this.masterVolume = volume;
+
+    // Update display of master volume value
+    document.getElementById("masterVolumeValue").textContent =
+      this.masterVolume;
+
+    // Apply master volume to all currently playing sounds
+    this.applyMasterVolumeToAll();
+  }
+
+  // Apply master volume to all playing sounds without affecting their individual volume displays
+  applyMasterVolumeToAll() {
+    for (const [soundId, audio] of this.soundManager.audioElements) {
+      if (!audio.paused) {
+        const card = document.querySelector(`[data-sound="${soundId}"]`);
+        const slider = card?.querySelector(".volume-slider");
+        if (slider) {
+          const individualVolume = parseInt(slider.value);
+          const effectiveVolume = (individualVolume * this.masterVolume) / 100;
+
+          // Apply to the actual audio element
+          audio.volume = effectiveVolume / 100;
+        }
+      }
+    }
   }
 }
 
