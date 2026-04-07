@@ -16,7 +16,7 @@ export class UI {
     this.soundCardsContainer = document.querySelector(".grid");
     this.masterVolumeSlider = document.getElementById("masterVolume");
     this.masterVolumeValue = document.getElementById("masterVolumeValue");
-    this.playPauseButton = document.getElementById("PlayPauseAll");
+    this.playPauseButton = document.getElementById("playPauseAll");
     this.resetButton = document.getElementById("resetAll");
     this.modal = document.getElementById("savePresetModal");
     this.customPresetsContainer = document.getElementById("customPresets");
@@ -104,6 +104,21 @@ export class UI {
       card.querySelector(".volume-bar-fill").style = `width: ${volume}%`;
       // Update number display
       card.querySelector(".volume-value").textContent = volume;
+    }
+  }
+
+  updatePlayPauseAllButton() {
+    const icon = this.playPauseButton.querySelector("i");
+    const buttonSpan = this.playPauseButton.querySelector("span");
+
+    icon.classList.remove("fa-pause");
+    icon.classList.add("fa-play");
+    buttonSpan.textContent = "Play All";
+
+    if (this.soundCardsContainer.querySelectorAll(".playing").length > 0) {
+      icon.classList.remove("fa-play");
+      icon.classList.add("fa-pause");
+      buttonSpan.textContent = "Pause All";
     }
   }
 }
