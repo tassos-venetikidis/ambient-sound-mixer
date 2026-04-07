@@ -54,6 +54,11 @@ class AmbientMixer {
       const volume = parseInt(e.target.value);
       this.setMasterVolume(volume);
     });
+
+    const masterPlayPauseButton = document.getElementById("playPauseAll");
+    masterPlayPauseButton?.addEventListener("click", () => {
+      this.toggleAllSounds();
+    });
   }
 
   // Load all sound files from the sounds array
@@ -130,6 +135,13 @@ class AmbientMixer {
         }
       }
     }
+  }
+
+  async toggleAllSounds() {
+    for (const [soundId] of this.soundManager.audioElements) {
+      await this.toggleSound(soundId);
+    }
+    this.ui.updatePlayPauseAllButton();
   }
 }
 
