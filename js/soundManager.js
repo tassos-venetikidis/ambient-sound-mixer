@@ -54,4 +54,15 @@ export class SoundManager {
     audio.volume = volume / 100;
     return true;
   }
+
+  // Stop all sounds
+  stopAllSounds() {
+    for (const audio of this.audioElements.values()) {
+      if (!audio.paused) {
+        audio.pause();
+      }
+      audio.currentTime = 0;
+      this.isPlaying = false;
+    }
+  }
 }
