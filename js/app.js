@@ -24,6 +24,11 @@ class AmbientMixer {
       this.setUpEventListeners();
       // Load all sound files
       this.loadAllSounds();
+
+      // Initialize sound states after loading sounds
+      sounds.forEach((sound) => {
+        this.currentSoundState[sound.id] = 0;
+      });
       this.isInitialized = true;
     } catch (error) {
       console.log("Failed to initialize app:", error);
@@ -34,11 +39,17 @@ class AmbientMixer {
   setUpEventListeners() {
     // Handle all clicks with event delegation
     document.addEventListener("click", async (e) => {
+      // Handle clicks on play buttons
       if (e.target.closest(".play-btn")) {
         const soundId = e.target.closest(".play-btn").dataset.sound;
         await this.toggleSound(soundId);
       }
+      // Handle clicks on preset buttons
+      if (e.target.closest(".preset-btn")) {
+        this.playPreset(e.target.closest(".preset-btn").dataset.preset);
+      }
     });
+
     // Handle volume slider changes
     document.addEventListener("input", (e) => {
       if (e.target.classList.contains("volume-slider")) {
@@ -49,21 +60,18 @@ class AmbientMixer {
     });
 
     // Handle master volume slider
-    const masterVolumeSlider = document.getElementById("masterVolume");
-    masterVolumeSlider.addEventListener("input", (e) => {
+    this.ui.masterVolumeSlider.addEventListener("input", (e) => {
       const volume = parseInt(e.target.value);
       this.setMasterVolume(volume);
     });
 
     // Handle play/pause of all sounds
-    const masterPlayPauseButton = document.getElementById("playPauseAll");
-    masterPlayPauseButton?.addEventListener("click", () => {
+    this.ui.playPauseButton?.addEventListener("click", () => {
       this.toggleAllSounds();
     });
 
     // Handle reset of all sounds to default state
-    const resetButton = document.getElementById("resetAll");
-    resetButton.addEventListener("click", () => {
+    this.ui.resetButton.addEventListener("click", () => {
       this.resetAll();
     });
   }
@@ -107,6 +115,8 @@ class AmbientMixer {
 
   // Set sound volume
   setSoundVolume(soundId, volume) {
+    // Set sound volume in state
+    this.currentSoundState[soundId] = volume;
     // Calculate effective volume with master volume
     const effectiveVolume = (volume * this.masterVolume) / 100;
     // Update sound volume in manager
@@ -145,6 +155,35 @@ class AmbientMixer {
   }
 
   async toggleAllSounds() {
+    const icon = this.ui.playPauseButton.querySelector("i");
+    if (icon.classList.contains("fa-play")) {
+      let anyPlaying = false;
+      this.ui.soundCardsContainer
+        .querySelectorAll(".sound-card")
+        .forEach((card) => {
+          if (card.classList.contains("playing")) {
+            anyPlaying = true;
+          }
+        });
+      if (anyPlaying) this.resetAll();
+    }
+    if (icon.classList.contains("fa-pause")) {
+      const soundCards =
+        this.ui.soundCardsContainer.querySelectorAll(".sound-card");
+      let numOfPlaying = 0;
+      soundCards.forEach((card) => {
+        if (card.classList.contains("playing")) {
+          numOfPlaying++;
+        }
+      });
+      if (numOfPlaying < soundCards.length) {
+        soundCards.forEach((card) => {
+          if (!card.classList.contains("playing")) {
+            this.toggleSound(card.dataset.sound);
+          }
+        });
+      }
+    }
     for (const [soundId] of this.soundManager.audioElements) {
       await this.toggleSound(soundId);
     }
@@ -155,7 +194,23 @@ class AmbientMixer {
   resetAll() {
     this.soundManager.stopAllSounds();
     this.ui.resetUI();
+    for (const soundId of Object.keys(this.currentSoundState)) {
+      this.currentSoundState[soundId] = 0;
+    }
     this.masterVolume = 50;
+  }
+
+  // Play preset according to button clicked
+  async playPreset(presetKey) {
+    this.resetAll();
+    const preset = defaultPresets[presetKey];
+    for (const [soundId, volume] of Object.entries(preset.sounds)) {
+      this.setSoundVolume(soundId, volume);
+      await this.soundManager.playSound(soundId);
+      this.ui.updateSoundPlayButton(soundId, true);
+      this.ui.updateVolumeDisplay(soundId, volume);
+    }
+    this.ui.updatePlayPauseAllButton();
   }
 }
 
