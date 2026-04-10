@@ -76,6 +76,27 @@ export class UI {
     });
   }
 
+  // Create custom preset button HTML
+  createCustomPresetButton(name, presetId) {
+    const button = document.createElement("button");
+    button.className =
+      "custom-preset-btn bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-all duration-300 relative group";
+    button.dataset.preset = presetId;
+    button.innerHTML = `<i class="fas fa-star mr-2 text-yellow-400"></i>
+    ${name}
+    <button type="button" class="delete-preset absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" data-preset="${presetId}">
+      <i class="fas fa-times text-xs text-white"></i>
+    </button>`;
+    return button;
+  }
+
+  // Render all custom preset buttons
+  renderCustomPresetButtons(customPresets) {
+    for (const [presetId, preset] of Object.entries(customPresets)) {
+      this.addCustomPreset(preset.name, presetId);
+    }
+  }
+
   // Update play/pause button for individual sound
   updateSoundPlayButton(soundId, isPlaying) {
     const card = document.querySelector(`[data-sound="${soundId}"]`);
@@ -147,5 +168,9 @@ export class UI {
     document.getElementById("presetName").value = "";
   }
 
-  showCustomPresets() {}
+  addCustomPreset(name, presetId) {
+    this.customPresetsContainer.append(
+      this.createCustomPresetButton(name, presetId),
+    );
+  }
 }
