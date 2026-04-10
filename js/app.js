@@ -22,6 +22,8 @@ class AmbientMixer {
       // Render sound cards using our sound data
       this.ui.renderSoundCards(sounds);
 
+      this.ui.renderCustomPresetButtons(this.presetManager.customPresets);
+
       this.setUpEventListeners();
       // Load all sound files
       this.loadAllSounds();
@@ -248,7 +250,8 @@ class AmbientMixer {
       this.currentSoundState,
     );
     this.ui.hideModal();
-    this.ui.showCustomPresets();
+    // Add custom preset to UI
+    this.ui.addCustomPreset(name, presetId);
   }
 }
 
