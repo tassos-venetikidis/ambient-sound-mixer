@@ -5,6 +5,7 @@ export class UI {
     this.masterVolumeValue = null;
     this.playPauseButton = null;
     this.resetButton = null;
+    this.savePresetButton = null;
     this.modal = null;
     this.customPresetsContainer = null;
     this.timerDisplay = null;
@@ -18,6 +19,7 @@ export class UI {
     this.masterVolumeValue = document.getElementById("masterVolumeValue");
     this.playPauseButton = document.getElementById("playPauseAll");
     this.resetButton = document.getElementById("resetAll");
+    this.savePresetButton = document.getElementById("savePreset");
     this.modal = document.getElementById("savePresetModal");
     this.customPresetsContainer = document.getElementById("customPresets");
     this.timerDisplay = document.getElementById("timerDisplay");
@@ -133,4 +135,17 @@ export class UI {
     this.masterVolumeSlider.value = 50;
     this.masterVolumeValue.textContent = "50";
   }
+
+  // Show the save new preset modal
+  showModal() {
+    this.modal.classList.replace("hidden", "flex");
+    document.getElementById("presetName").focus();
+  }
+  // Hide the save new preset modal
+  hideModal() {
+    this.modal.classList.replace("flex", "hidden");
+    document.getElementById("presetName").value = "";
+  }
+
+  showCustomPresets() {}
 }
