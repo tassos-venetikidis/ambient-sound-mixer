@@ -97,6 +97,21 @@ export class UI {
     }
   }
 
+  // Show button as active
+  renderPresetButtonActive(presetId) {
+    this.renderAllButtonsAsInactive();
+    document
+      .querySelector(`[data-preset="${presetId}"]`)
+      .classList.add("preset-active");
+  }
+
+  // Update the UI to show all buttons as inactive
+  renderAllButtonsAsInactive() {
+    document
+      .querySelectorAll(".preset-btn, .custom-preset-btn")
+      .forEach((button) => button.classList.remove("preset-active"));
+  }
+
   // Update play/pause button for individual sound
   updateSoundPlayButton(soundId, isPlaying) {
     const card = document.querySelector(`[data-sound="${soundId}"]`);
@@ -155,6 +170,7 @@ export class UI {
     this.updatePlayPauseAllButton();
     this.masterVolumeSlider.value = 50;
     this.masterVolumeValue.textContent = "50";
+    this.renderAllButtonsAsInactive();
   }
 
   // Show the save new preset modal
