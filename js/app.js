@@ -61,6 +61,14 @@ class AmbientMixer {
       if (e.target.id === "confirmSave") {
         this.saveNewCustomPreset();
       }
+
+      // Handle clicks on custom preset buttons
+      if (e.target.closest(".custom-preset-btn")) {
+        this.playPreset(
+          e.target.closest(".custom-preset-btn").dataset.preset,
+          true,
+        );
+      }
     });
 
     // Handle volume slider changes
@@ -201,6 +209,7 @@ class AmbientMixer {
             this.toggleSound(card.dataset.sound);
           }
         });
+        this.ui.renderAllButtonsAsInactive();
       }
     }
     for (const [soundId] of this.soundManager.audioElements) {
@@ -220,15 +229,21 @@ class AmbientMixer {
   }
 
   // Play preset according to button clicked
-  async playPreset(presetKey) {
+  async playPreset(presetKey, custom = false) {
+    let preset;
+    if (custom) {
+      preset = this.presetManager.customPresets[presetKey];
+    } else {
+      preset = defaultPresets[presetKey];
+    }
     this.resetAll();
-    const preset = defaultPresets[presetKey];
     for (const [soundId, volume] of Object.entries(preset.sounds)) {
       this.setSoundVolume(soundId, volume);
       await this.soundManager.playSound(soundId);
       this.ui.updateSoundPlayButton(soundId, true);
       this.ui.updateVolumeDisplay(soundId, volume);
     }
+    this.ui.renderPresetButtonActive(presetKey);
     this.ui.updatePlayPauseAllButton();
   }
 
