@@ -1,6 +1,6 @@
 export class PresetManager {
   constructor() {
-    this.customPresets = this.loadPresets();
+    this.customPresets = this.loadCustomPresets();
   }
 
   // Load custom presets from local storage
