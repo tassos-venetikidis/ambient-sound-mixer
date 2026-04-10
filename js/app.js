@@ -1,3 +1,4 @@
+import { PresetManager } from "./presetManager.js";
 import { sounds, defaultPresets } from "./soundData.js";
 import { SoundManager } from "./soundManager.js";
 import { UI } from "./ui.js";
@@ -7,7 +8,7 @@ class AmbientMixer {
   constructor() {
     this.soundManager = new SoundManager();
     this.ui = new UI();
-    this.presetManager = null;
+    this.presetManager = new PresetManager();
     this.timer = null;
     this.currentSoundState = {};
     this.masterVolume = 50;
@@ -48,6 +49,16 @@ class AmbientMixer {
       if (e.target.closest(".preset-btn")) {
         this.playPreset(e.target.closest(".preset-btn").dataset.preset);
       }
+
+      // Handle clicks of the modal blurred background or the cancel button of the modal
+      if (e.target.id === "savePresetModal" || e.target.id === "cancelSave") {
+        this.ui.hideModal();
+      }
+
+      // Handle clicks of the save button of the modal
+      if (e.target.id === "confirmSave") {
+        this.saveNewCustomPreset();
+      }
     });
 
     // Handle volume slider changes
@@ -73,6 +84,11 @@ class AmbientMixer {
     // Handle reset of all sounds to default state
     this.ui.resetButton.addEventListener("click", () => {
       this.resetAll();
+    });
+
+    // Handle clicks on the save new preset button
+    this.ui.savePresetButton.addEventListener("click", (e) => {
+      this.showSavePresetModal();
     });
   }
 
@@ -110,6 +126,7 @@ class AmbientMixer {
     } else {
       this.soundManager.pauseSound(soundId);
       this.ui.updateSoundPlayButton(soundId, false);
+      this.currentSoundState[soundId] = 0;
     }
   }
 
@@ -211,6 +228,27 @@ class AmbientMixer {
       this.ui.updateVolumeDisplay(soundId, volume);
     }
     this.ui.updatePlayPauseAllButton();
+  }
+
+  showSavePresetModal() {
+    if (Object.values(this.currentSoundState).every((volume) => volume === 0)) {
+      return alert("No active sounds for preset!");
+    }
+    this.ui.showModal();
+  }
+
+  saveNewCustomPreset() {
+    const name = document.getElementById("presetName").value.trim();
+    if (!name)
+      return alert("You need to provide a name for your custom preset!");
+    if (this.presetManager.presetNameExists(name))
+      return alert("This preset name already exists. Choose a different one!");
+    const presetId = this.presetManager.savePreset(
+      name,
+      this.currentSoundState,
+    );
+    this.ui.hideModal();
+    this.ui.showCustomPresets();
   }
 }
 
