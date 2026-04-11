@@ -189,4 +189,11 @@ export class UI {
       this.createCustomPresetButton(name, presetId),
     );
   }
+
+  // Remove custom preset button from UI
+  removeCustomPresetButton(presetId) {
+    document
+      .querySelector(`.custom-preset-btn[data-preset="${presetId}"]`)
+      ?.remove();
+  }
 }
