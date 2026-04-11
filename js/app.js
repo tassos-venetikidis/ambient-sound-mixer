@@ -62,8 +62,12 @@ class AmbientMixer {
         this.saveNewCustomPreset();
       }
 
-      // Handle clicks on custom preset buttons
-      if (e.target.closest(".custom-preset-btn")) {
+      // Handle clicks on delete custom preset buttons and general custom preset buttons
+      if (e.target.closest(".delete-preset")) {
+        this.removeCustomPreset(
+          e.target.closest(".delete-preset").dataset.preset,
+        );
+      } else if (e.target.closest(".custom-preset-btn")) {
         this.playPreset(
           e.target.closest(".custom-preset-btn").dataset.preset,
           true,
@@ -267,6 +271,12 @@ class AmbientMixer {
     this.ui.hideModal();
     // Add custom preset to UI
     this.ui.addCustomPreset(name, presetId);
+  }
+
+  removeCustomPreset(presetId) {
+    this.resetAll();
+    this.presetManager.deletePreset(presetId);
+    this.ui.removeCustomPresetButton(presetId);
   }
 }
 
