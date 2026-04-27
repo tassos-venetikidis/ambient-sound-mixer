@@ -2,6 +2,7 @@ import { PresetManager } from "./presetManager.js";
 import { sounds, defaultPresets } from "./soundData.js";
 import { SoundManager } from "./soundManager.js";
 import { UI } from "./ui.js";
+import { Timer } from "./timer.js";
 
 class AmbientMixer {
   // Initialize dependencies and default state
@@ -9,7 +10,10 @@ class AmbientMixer {
     this.soundManager = new SoundManager();
     this.ui = new UI();
     this.presetManager = new PresetManager();
-    this.timer = null;
+    this.timer = new Timer(
+      () => this.onTimerComplete(),
+      (minutes, seconds) => this.ui.updateTimerDisplay(minutes, seconds),
+    );
     this.currentSoundState = {};
     this.masterVolume = 50;
     this.isInitialized = false;
@@ -103,6 +107,16 @@ class AmbientMixer {
     // Handle clicks on the save new preset button
     this.ui.savePresetButton.addEventListener("click", (e) => {
       this.showSavePresetModal();
+    });
+
+    // Handle changes on the timer select
+    this.ui.timerSelect.addEventListener("change", (e) => {
+      const minutes = parseInt(e.target.value);
+      if (minutes > 0) {
+        this.timer.start(minutes);
+      } else {
+        this.timer.stop();
+      }
     });
   }
 
@@ -230,6 +244,8 @@ class AmbientMixer {
       this.currentSoundState[soundId] = 0;
     }
     this.masterVolume = 50;
+    this.timer.stop();
+    this.ui.timerSelect.value = "0";
   }
 
   // Play preset according to button clicked
@@ -277,6 +293,18 @@ class AmbientMixer {
     this.resetAll();
     this.presetManager.deletePreset(presetId);
     this.ui.removeCustomPresetButton(presetId);
+  }
+
+  // Timer complete callback
+  onTimerComplete() {
+    this.resetAll();
+
+    // Reset timer select dropdown
+    this.ui.timerSelect.value = "0";
+
+    // Clear and hide timer display
+    this.ui.timerDisplay.textContent = "";
+    this.ui.timerDisplay.classList.add("hidden");
   }
 }
 
