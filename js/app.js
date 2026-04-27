@@ -77,6 +77,10 @@ class AmbientMixer {
           true,
         );
       }
+      // Handle clicks on the theme toggle button
+      if (e.target.closest("#themeToggle")) {
+        this.ui.toggleTheme();
+      }
     });
 
     // Handle volume slider changes
