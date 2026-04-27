@@ -206,4 +206,17 @@ export class UI {
       this.timerDisplay.classList.add("hidden");
     }
   }
+
+  // Toggle theme
+  toggleTheme() {
+    const body = document.body;
+    const icon = this.themeToggle.querySelector("i");
+    if (body.classList.contains("light-theme")) {
+      body.classList.replace("light-theme", "dark-theme");
+      icon.classList.replace("fa-moon", "fa-sun");
+    } else {
+      body.classList.replace("dark-theme", "light-theme");
+      icon.classList.replace("fa-sun", "fa-moon");
+    }
+  }
 }
