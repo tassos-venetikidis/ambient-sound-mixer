@@ -196,4 +196,14 @@ export class UI {
       .querySelector(`.custom-preset-btn[data-preset="${presetId}"]`)
       ?.remove();
   }
+
+  // Update timer display
+  updateTimerDisplay(minutes, seconds) {
+    if (minutes > 0 || seconds > 0) {
+      this.timerDisplay.textContent = `${minutes < 10 ? "0" + minutes : minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+      this.timerDisplay.classList.remove("hidden");
+    } else {
+      this.timerDisplay.classList.add("hidden");
+    }
+  }
 }
